@@ -4,12 +4,17 @@
 // function declarations
 std::string caesarCipher(std::string input);
 void caesarEncrypt(int idx, int offset, std::string in, char out[]);
+void affineEncrypt(int idx, int offset, std::string in, char out[]);
 int cipherSelection();
 int choose_message_input_type();
 //std::string get_text_file_content();
 //std::string get_command_line_message();
 
-std::string caesarCipher(std::string input) {
+char intToAscii(int i) {
+    return '0' + i;
+}
+
+std::string cipher(std::string input, int cipher=1) {
     int offset;
     char output[input.length()];
 
@@ -21,16 +26,21 @@ std::string caesarCipher(std::string input) {
     if (-26 > offset || offset > 26) exit(0);
 
     for (int i=0; i<input.length(); i++) {
-        caesarEncrypt(i, offset, input, output);
+        switch (cipher) {
+            case 1: 
+                caesarEncrypt(i, offset, input, output);
+                break;
+            case 2:
+                affineEncrypt(i, offset, input, output);
+                break;
+            default:
+                break;
+        }
     }
     std::cout << "Encryption finished" << std::endl;
     std::string s(output);
     return s;
 
-}
-
-char intToAscii(int i) {
-    return '0' + i;
 }
 
 void caesarEncrypt(int idx, int offset, std::string in, char out[]) {
@@ -40,8 +50,6 @@ void caesarEncrypt(int idx, int offset, std::string in, char out[]) {
     // uppercase letters: 97-122
 
     char input = (unsigned char)in[idx];
-
-    std::cout << "Current char: " << input << std::endl;
 
     if (64 < input && input < 91) { 
         // lowercase
@@ -53,8 +61,23 @@ void caesarEncrypt(int idx, int offset, std::string in, char out[]) {
     } else {
         out[idx] = input;
     }
-    std::cout << "Becomes: " << out[idx] << std::endl;
+}
 
+void affineEncrypt(int idx, int offset, std::string in, char out[]) {
+    // b is 26, a must be coprime, pick 7
+    char input = (unsigned char)in[idx];
+    int a = 7;
+
+    if (64 < input && input < 91) { 
+        // lowercase
+        out[idx] = (a*(input-66)+offset)%26+66;
+
+    } else if (96 < input && input < 123) { 
+        // uppercase
+        out[idx] = ((a*(input-98)+offset)%26)+98;
+    } else {
+        out[idx] = input;
+    }
 }
 
 int choose_message_input_type() {
@@ -71,6 +94,7 @@ std::string get_command_line_message() {
 
     std::cout << "\nEnter your message below\n########################\n\n";
     
+    // fix this from needing two getlines
     std::getline (std::cin, message);
     std::getline (std::cin, message);
 
@@ -137,20 +161,9 @@ int main() {
         messagePlain = get_command_line_message(); // use branchless approach
         cipherType = cipherSelection();
 
-        switch (cipherType) {
-            case 1:
-                std::cout << "Caesar Cipher" << std::endl;
-                messageEncrypted = caesarCipher(messagePlain);
-                std::cout << "Result: " << messageEncrypted << std::endl;
-                break;
-            case 2: 
-                break;
-            case 3:
-                break;
-            default:
-                std::cout << "Default case was raised by: " << cipherType << std::endl;
-                break;
-        }
+        messageEncrypted = cipher(messagePlain, cipherType);
+        std::cout << "Result: " << messageEncrypted << std::endl;
+
         std::cout << "Would you like to go again (y/n)? ";
         std::cin >> again;
     } while (again == 'y');
