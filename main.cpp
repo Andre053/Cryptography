@@ -4,7 +4,7 @@
 // function declarations
 std::string caesarCipher(std::string input);
 void caesarEncrypt(int idx, int offset, std::string in, char out[]);
-void affineEncrypt(int idx, int offset, std::string in, char out[]);
+void affineEncrypt(int idx, int offset, std::string in, char out[], int a);
 int cipherSelection();
 int choose_message_input_type();
 //std::string get_text_file_content();
@@ -15,7 +15,7 @@ char intToAscii(int i) {
 }
 
 std::string cipher(std::string input, int cipher=1) {
-    int offset;
+    int offset, a;
     char output[input.length()];
 
     std::cout << "Please enter an offset for the cipher" << std::endl;
@@ -25,13 +25,18 @@ std::string cipher(std::string input, int cipher=1) {
 
     if (-26 > offset || offset > 26) exit(0);
 
+    if (cipher == 2) {
+        std::cout << "Please enter a value for a, which must be co-prime to 26\nEx. 3, 5, 7, 9, 11..." << std::endl;
+        std::cin >> a;
+    }
+
     for (int i=0; i<input.length(); i++) {
         switch (cipher) {
             case 1: 
                 caesarEncrypt(i, offset, input, output);
                 break;
             case 2:
-                affineEncrypt(i, offset, input, output);
+                affineEncrypt(i, offset, input, output, a);
                 break;
             default:
                 break;
@@ -63,10 +68,12 @@ void caesarEncrypt(int idx, int offset, std::string in, char out[]) {
     }
 }
 
-void affineEncrypt(int idx, int offset, std::string in, char out[]) {
+void affineEncrypt(int idx, int offset, std::string in, char out[], int a = 1) {
     // b is 26, a must be coprime, pick 7
     char input = (unsigned char)in[idx];
-    int a = 7;
+    
+
+    // check if a is co-prime to 26
 
     if (64 < input && input < 91) { 
         // lowercase
