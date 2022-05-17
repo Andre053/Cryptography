@@ -5,8 +5,12 @@
 std::string caesarCipher(std::string input);
 void caesarEncrypt(int idx, int offset, std::string in, char out[]);
 void affineEncrypt(int idx, int offset, std::string in, char out[], int a);
+void vinegereEncrypt(int idx, int offset, std::string in, char out[]);
 int cipherSelection();
 int choose_message_input_type();
+std::string cipher(std::string input, int cipher);
+std::string decipher(std::string input, int decipher);
+
 //std::string get_text_file_content();
 //std::string get_command_line_message();
 
@@ -37,6 +41,9 @@ std::string cipher(std::string input, int cipher=1) {
                 break;
             case 2:
                 affineEncrypt(i, offset, input, output, a);
+                break;
+            case 3:
+                vinegereEncrypt(i, offset, input, output);
                 break;
             default:
                 break;
@@ -85,6 +92,18 @@ void affineEncrypt(int idx, int offset, std::string in, char out[], int a = 1) {
     } else {
         out[idx] = input;
     }
+}
+
+void vinegereEncrypt(int idx, int offset, std::string in, char out[]) {
+
+
+}
+
+std::string decipher(std::string input, int decipher=1) {
+    std::cout << "Deciphering" << std::endl;
+    std::string s;
+
+    return s;
 }
 
 int choose_message_input_type() {
@@ -149,30 +168,44 @@ int cipherSelection() {
 
 int main() {
     /*
-
         ### ENCRYPTOR ###
 
         1. Input a message from command line or submit a text file (or allow them to create a new vim file, open vim for them)
         2. Select the cipher you want 
         3. Confirm the cipher parameters
         4. Export encrypted message to a file or to clipboard
-
-
     */
-    std::string messagePlain, messageEncrypted;
-    int inputType, cipherType;
+    std::string message, messageEncrypted, messageDecrypted;
+    int inputType, encryptType, input, decryptType;
     char again;
+    bool encrypt = true;
 
     do {
-        inputType = choose_message_input_type();
-        messagePlain = get_command_line_message(); // use branchless approach
-        cipherType = cipherSelection();
+        std::cout << "Would you like to encrypt or decrypt (e/d)?" << std::endl;
+        std::cin >> input;
+        std::cin >> input;
 
-        messageEncrypted = cipher(messagePlain, cipherType);
-        std::cout << "Result: " << messageEncrypted << std::endl;
+        inputType = choose_message_input_type();
+        message = get_command_line_message(); // use branchless approach
+
+        if (input == 'e') {
+            
+            encryptType = cipherSelection();
+
+            messageEncrypted = cipher(message, encryptType);
+            std::cout << "Result: " << messageEncrypted << std::endl;
+        }
+
+        if (input == 'd') {
+            decryptType = cipherSelection();
+
+            messageDecrypted = decipher(message, decryptType);
+            std::cout << "Result: " << messageDecrypted << std::endl;
+        }
 
         std::cout << "Would you like to go again (y/n)? ";
         std::cin >> again;
+
     } while (again == 'y');
 
     
