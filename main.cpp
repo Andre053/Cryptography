@@ -5,7 +5,7 @@
 std::string caesarCipher(std::string input);
 void caesarEncrypt(int idx, int offset, std::string in, char out[]);
 void affineEncrypt(int idx, int offset, std::string in, char out[], int a);
-void vinegereEncrypt(int idx, int offset, std::string in, char out[]);
+void vinegereEncrypt(int idx, std::string key, std::string in, char out[]);
 int cipherSelection();
 int choose_message_input_type();
 std::string cipher(std::string input, int cipher);
@@ -20,10 +20,23 @@ char intToAscii(int i) {
 
 std::string cipher(std::string input, int cipher=1) {
     int offset, a;
+    std::string key;
     char output[input.length()];
 
-    std::cout << "Please enter an offset for the cipher" << std::endl;
-    std::cin >> offset;
+    if (cipher == 1 || cipher == 2) {
+        std::cout << "Please enter an offset for the cipher" << std::endl;
+        std::cin >> offset;
+    } else {
+        std::cout << "Please enter a key" << std::endl;
+        std::cin >> key;
+        if (key.length() <= input.length()) {
+            // repeat key until lengths are equal
+        } else {
+            // truncate key
+        }
+    }
+
+    
 
     std::cout << "\nEncoding '" << input << "/" << output << "' with offset: " << offset << std::endl;
 
@@ -43,7 +56,7 @@ std::string cipher(std::string input, int cipher=1) {
                 affineEncrypt(i, offset, input, output, a);
                 break;
             case 3:
-                vinegereEncrypt(i, offset, input, output);
+                vinegereEncrypt(i, key, input, output);
                 break;
             default:
                 break;
@@ -94,13 +107,35 @@ void affineEncrypt(int idx, int offset, std::string in, char out[], int a = 1) {
     }
 }
 
-void vinegereEncrypt(int idx, int offset, std::string in, char out[]) {
+void vinegereEncrypt(int idx, std::string key, std::string in, char out[]) {
 
+    /*
+        user must also pass a keyword that is 
+        repeated until the num of characters
+        equals the input length
+
+        algebrarically: C = (M+K)mod26
+
+    */
+
+   char input = (unsigned char)in[idx];
+   char keyChar = (unsigned char)key[idx];
+
+   if (64 < input && input < 91) { 
+        // lowercase
+        out[idx] = ((input-66)+keyChar)%26+66;
+
+    } else if (96 < input && input < 123) { 
+        // uppercase
+        out[idx] = (((input-98)+keyChar)%26)+98;
+    } else {
+        out[idx] = input;
+    }
 
 }
 
 std::string decipher(std::string input, int decipher=1) {
-    std::cout << "Deciphering" << std::endl;
+    std::cout << "Deciphering type " << decipher << std::endl;
     std::string s;
 
     return s;
